@@ -6,12 +6,13 @@ import {VaultAPI} from "@yearnvaults/contracts/BaseWrapper.sol";
 import {BaseRouter} from "./BaseRouter.sol";
 
 contract ShapeShiftRouter is BaseRouter {
+    
     // TODO:
     // BaseRouter not yet included in the 0.4.3 tagged release.
     // use ownable from oz
     // additional information in smart contract?
-    // events for rewards?
-    // FOX?
+    // setRegistry can be set by whom? currently yearn governance. Should this be us or them?
+    //
     // If a user calls withdraw for tokens that are in a vault that this contract never interacted with
     // that vault with not have an approval from this contract.  Should we add the ability for the owner to
     // approve a fault as a safeguard, or maybe just better to direct caller to use yearn directly in that scenario.

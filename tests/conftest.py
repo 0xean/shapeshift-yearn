@@ -51,6 +51,12 @@ def affiliate_token(token, affiliate, registry, AffiliateToken):
         f"af{token.symbol()}",
     )
 
+@pytest.fixture
+def shape_shift_router(affiliate, registry,  ShapeShiftRouter):
+  yield affiliate.deploy(
+    ShapeShiftRouter,
+    registry
+  )
 
 @pytest.fixture
 def vault(create_vault, token):
@@ -167,6 +173,13 @@ def live_affiliate_token(AffiliateToken, affiliate, live_token, live_registry):
         f"af{live_token.symbol()}",
     )
 
+@pytest.fixture
+def live_shape_shift_router(ShapeShiftRouter, affiliate, live_registry):
+    # Affliate Wrapper
+    yield affiliate.deploy(
+        ShapeShiftRouter,
+        live_registry
+    )
 
 @pytest.fixture
 def live_registry():

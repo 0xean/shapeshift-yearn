@@ -6,7 +6,6 @@ import {VaultAPI} from "@yearnvaults/contracts/BaseWrapper.sol";
 import {BaseRouter} from "./BaseRouter.sol";
 
 contract ShapeShiftRouter is BaseRouter {
-    
     // TODO:
     // BaseRouter not yet included in the 0.4.3 tagged release.
     // use ownable from oz

@@ -29,7 +29,6 @@ contract ShapeShiftRouter is BaseRouter {
     @param _recipient address to send the issued vault tokens
     @param _amount ERC20 amount to be deposited, any remaining is refunded,
     BaseRouter.sol will iterate through vaults until this amount reached or no more vaults
-    @param _withdrawFromBest should assets be removed from the "best" vault. useful for migrating / consolidating
     */
     function deposit(
         address _token,

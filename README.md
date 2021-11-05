@@ -1,34 +1,16 @@
-# Yearn Affiliate Wrapper Brownie Mix
-
-## What you'll find here
-
-- Basic Solidity Smart Contract for creating your own Yearn Affiliate Wrapper ([`contracts/AffiliateToken.sol`](contracts/AffiliateToken.sol))
-
-- Sample test suite that runs on mainnet fork. ([`tests/`](tests))
-
-This mix is configured for use with [Ganache](https://github.com/trufflesuite/ganache-cli) on a [forked mainnet](https://eth-brownie.readthedocs.io/en/stable/network-management.html#using-a-forked-development-network).
+# ShapeShift's Yearn Affiliate Router
 
 ## Installation and Setup
 
-1. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
+1. copy `.env.example` to .env and populate with valid api credentials
 
-2. Sign up for [Infura](https://infura.io/) and generate an API key. Store it in the `WEB3_INFURA_PROJECT_ID` environment variable.
+  Sign up for [Infura](https://infura.io/) and generate an API key. Store it in the `WEB3_INFURA_PROJECT_ID` environment variable.
 
-```bash
-export WEB3_INFURA_PROJECT_ID=YourProjectID
-```
+  Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
 
-3. Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
+2. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
 
-```bash
-export ETHERSCAN_TOKEN=YourApiToken
-```
-
-4. Download the mix.
-
-```bash
-brownie bake yearn-affiliate
-```
+3. Run tests using `brownie test` on the mainnet fork
 
 ## Known issues
 

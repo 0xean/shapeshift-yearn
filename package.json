@@ -1,8 +1,6 @@
 {
   "name": "shapeshift-yearn",
   "devDependencies": {
-    "@commitlint/cli": "^12.1.4",
-    "@commitlint/config-conventional": "^12.1.4",
     "ethlint": "^1.2.5",
     "husky": "^4.3.0",
     "prettier": "^2.3.2",
@@ -16,8 +14,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint:fix",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "pre-commit": "yarn lint:fix"
     }
   }
 }

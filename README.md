@@ -1,16 +1,22 @@
-# ShapeShift's Yearn Affiliate Router
+# ShapeShift DAOs Yearn Affiliate Router
 
 ## Installation and Setup
 
-1. copy `.env.example` to .env and populate with valid api credentials
+1. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
 
-  Sign up for [Infura](https://infura.io/) and generate an API key. Store it in the `WEB3_INFURA_PROJECT_ID` environment variable.
+2. Sign up for [Infura](https://infura.io/) and generate an API key. Store it in the `WEB3_INFURA_PROJECT_ID` environment variable.
 
-  Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
+```bash
+export WEB3_INFURA_PROJECT_ID=YourProjectID
+```
 
-2. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
+3. Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
 
-3. Run tests using `brownie test` on the mainnet fork
+```bash
+export ETHERSCAN_TOKEN=YourApiToken
+```
+
+4. run tests using `brownie test`
 
 ## Known issues
 

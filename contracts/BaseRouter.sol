@@ -16,7 +16,10 @@ interface RegistryAPI {
 
     function numVaults(address token) external view returns (uint256);
 
-    function vaults(address token, uint256 deploymentId) external view returns (address);
+    function vaults(address token, uint256 deploymentId)
+        external
+        view
+        returns (address);
 }
 
 /**
@@ -78,7 +81,12 @@ abstract contract BaseRouter {
      *  Used to get all vaults from the registery for the token
      * @return An array containing instances of VaultAPI
      */
-    function allVaults(address token) public view virtual returns (VaultAPI[] memory) {
+    function allVaults(address token)
+        public
+        view
+        virtual
+        returns (VaultAPI[] memory)
+    {
         uint256 cache_length = _cachedVaults[token].length;
         uint256 num_vaults = registry.numVaults(token);
 
@@ -93,14 +101,20 @@ abstract contract BaseRouter {
             vaults[vault_id] = _cachedVaults[token][vault_id];
         }
 
-        for (uint256 vault_id = cache_length; vault_id < num_vaults; vault_id++) {
+        for (
+            uint256 vault_id = cache_length;
+            vault_id < num_vaults;
+            vault_id++
+        ) {
             vaults[vault_id] = VaultAPI(registry.vaults(token, vault_id));
         }
 
         return vaults;
     }
 
-    function _updateVaultCache(address token, VaultAPI[] memory vaults) internal {
+    function _updateVaultCache(address token, VaultAPI[] memory vaults)
+        internal
+    {
         // NOTE: even though `registry` is update-able by Yearn, the intended behavior
         //       is that any future upgrades to the registry will replay the version
         //       history so that this cached value does not get out of date.
@@ -116,11 +130,20 @@ abstract contract BaseRouter {
      *  @param account The address of the account.
      *  @return balance of token for the account accross all the vaults.
      */
-    function totalVaultBalance(address token, address account) public view returns (uint256 balance) {
+    function totalVaultBalance(address token, address account)
+        public
+        view
+        returns (uint256 balance)
+    {
         VaultAPI[] memory vaults = allVaults(token);
 
         for (uint256 id = 0; id < vaults.length; id++) {
-            balance = balance.add(vaults[id].balanceOf(account).mul(vaults[id].pricePerShare()).div(10**uint256(vaults[id].decimals())));
+            balance = balance.add(
+                vaults[id]
+                .balanceOf(account)
+                .mul(vaults[id].pricePerShare())
+                .div(10**uint256(vaults[id].decimals()))
+            );
         }
     }
 
@@ -155,7 +178,11 @@ abstract contract BaseRouter {
 
         if (token.allowance(address(this), address(_bestVault)) < amount) {
             SafeERC20.safeApprove(token, address(_bestVault), 0); // Avoid issues with some tokens requiring 0
-            SafeERC20.safeApprove(token, address(_bestVault), UNLIMITED_APPROVAL); // Vaults are trusted
+            SafeERC20.safeApprove(
+                token,
+                address(_bestVault),
+                UNLIMITED_APPROVAL
+            ); // Vaults are trusted
         }
 
         // Depositing returns number of shares deposited
@@ -175,7 +202,8 @@ abstract contract BaseRouter {
         deposited = beforeBal.sub(afterBal);
         // `receiver` now has shares of `_bestVault` as balance, converted to `token` here
         // Issue a refund if not everything was deposited
-        if (depositor != address(this) && afterBal > 0) SafeERC20.safeTransfer(token, depositor, afterBal);
+        if (depositor != address(this) && afterBal > 0)
+            SafeERC20.safeTransfer(token, depositor, afterBal);
     }
 
     function _withdraw(
@@ -208,16 +236,27 @@ abstract contract BaseRouter {
             // Restrict by the allowance that `sender` has to this contract
             // NOTE: No need for allowance check if `sender` is this contract
             if (sender != address(this)) {
-                availableShares = Math.min(availableShares, vaults[id].allowance(sender, address(this)));
+                availableShares = Math.min(
+                    availableShares,
+                    vaults[id].allowance(sender, address(this))
+                );
             }
 
             // Limit by maximum withdrawal size from each vault
-            availableShares = Math.min(availableShares, vaults[id].maxAvailableShares());
+            availableShares = Math.min(
+                availableShares,
+                vaults[id].maxAvailableShares()
+            );
 
             if (availableShares > 0) {
                 // Intermediate step to move shares to this contract before withdrawing
                 // NOTE: No need for share transfer if this contract is `sender`
-                if (sender != address(this)) vaults[id].transferFrom(sender, address(this), availableShares);
+                if (sender != address(this))
+                    vaults[id].transferFrom(
+                        sender,
+                        address(this),
+                        availableShares
+                    );
 
                 if (amount != WITHDRAW_EVERYTHING) {
                     // Compute amount to withdraw fully to satisfy the request
@@ -229,10 +268,16 @@ abstract contract BaseRouter {
                     // Limit amount to withdraw to the maximum made available to this contract
                     // NOTE: Avoid corner case where `estimatedShares` isn't precise enough
                     // NOTE: If `0 < estimatedShares < 1` but `availableShares > 1`, this will withdraw more than necessary
-                    if (estimatedShares > 0 && estimatedShares < availableShares) {
-                        withdrawn = withdrawn.add(vaults[id].withdraw(estimatedShares));
+                    if (
+                        estimatedShares > 0 && estimatedShares < availableShares
+                    ) {
+                        withdrawn = withdrawn.add(
+                            vaults[id].withdraw(estimatedShares)
+                        );
                     } else {
-                        withdrawn = withdrawn.add(vaults[id].withdraw(availableShares));
+                        withdrawn = withdrawn.add(
+                            vaults[id].withdraw(availableShares)
+                        );
                     }
                 } else {
                     withdrawn = withdrawn.add(vaults[id].withdraw());
@@ -246,10 +291,21 @@ abstract contract BaseRouter {
 
         // If we have extra, deposit back into `_bestVault` for `sender`
         // NOTE: Invariant is `withdrawn <= amount`
-        if (withdrawn > amount && withdrawn.sub(amount) > _bestVault.pricePerShare().div(10**_bestVault.decimals())) {
+        if (
+            withdrawn > amount &&
+            withdrawn.sub(amount) >
+            _bestVault.pricePerShare().div(10**_bestVault.decimals())
+        ) {
             // Don't forget to approve the deposit
-            if (token.allowance(address(this), address(_bestVault)) < withdrawn.sub(amount)) {
-                SafeERC20.safeApprove(token, address(_bestVault), UNLIMITED_APPROVAL); // Vaults are trusted
+            if (
+                token.allowance(address(this), address(_bestVault)) <
+                withdrawn.sub(amount)
+            ) {
+                SafeERC20.safeApprove(
+                    token,
+                    address(_bestVault),
+                    UNLIMITED_APPROVAL
+                ); // Vaults are trusted
             }
 
             _bestVault.deposit(withdrawn.sub(amount), sender);
@@ -257,6 +313,7 @@ abstract contract BaseRouter {
         }
 
         // `receiver` now has `withdrawn` tokens as balance
-        if (receiver != address(this)) SafeERC20.safeTransfer(token, receiver, withdrawn);
+        if (receiver != address(this))
+            SafeERC20.safeTransfer(token, receiver, withdrawn);
     }
 }

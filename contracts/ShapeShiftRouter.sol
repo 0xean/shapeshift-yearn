@@ -12,6 +12,9 @@ contract ShapeShiftRouter is BaseRouter {
     // additional information in smart contract?
     // events for rewards?
     // FOX?
+    // If a user calls withdraw for tokens that are in a vault that this contract never interacted with
+    // that vault with not have an approval from this contract.  Should we add the ability for the owner to
+    // approve a fault as a safeguard, or maybe just better to direct caller to use yearn directly in that scenario.
 
     uint256 constant MIGRATE_EVERYTHING = type(uint256).max;
     // VaultsAPI.depositLimit is unlimited
@@ -19,6 +22,15 @@ contract ShapeShiftRouter is BaseRouter {
 
     constructor(address _registry) public BaseRouter(_registry) {}
 
+    /**
+    @notice called to deposit the callers token into the current best vault.  Caller must approve this contract
+    to utilize the ERC20 or this call will revert.
+    @param _token address of the ERC20 token being deposited
+    @param _recipient address to send the issued vault tokens
+    @param _amount ERC20 amount to be deposited, any remaining is refunded,
+    BaseRouter.sol will iterate through vaults until this amount reached or no more vaults
+    @param _withdrawFromBest should assets be removed from the "best" vault. useful for migrating / consolidating
+    */
     function deposit(
         address _token,
         address _recipient,
@@ -27,6 +39,15 @@ contract ShapeShiftRouter is BaseRouter {
         return _deposit(IERC20(_token), msg.sender, _recipient, _amount, true);
     }
 
+    /**
+    @notice called to withdraw the callers token from underlying vault(s) with the proceeds distributed to the 
+    recipient. Caller must approve their yearn vault tokens for use by this contract.
+    @param _token address of the ERC20 token to withdraw from vaults
+    @param _recipient address to send the withdrawn tokens
+    @param _amount specific amount to withdraw from vaults. 
+    BaseRouter.sol will iterate through vaults until this amount reached or no more vaults
+    @param _withdrawFromBest should assets be removed from the "best" vault. useful for migrating / consolidating
+    */
     function withdraw(
         address _token,
         address _recipient,
@@ -40,6 +61,26 @@ contract ShapeShiftRouter is BaseRouter {
                 _recipient,
                 _amount,
                 _withdrawFromBest
+            );
+    }
+
+    /**
+    @notice called to withdraw all callers token from underlying vault(s) with the proceeds distributed to the 
+    recipient. Caller must approve their yearn vault tokens for use by this contract.
+    @param _token address of the ERC20 token to withdraw from vaults
+    @param _recipient address to send the withdrawn tokens
+    */
+    function withdraw(address _token, address _recipient)
+        external
+        returns (uint256)
+    {
+        return
+            _withdraw(
+                IERC20(_token),
+                msg.sender,
+                _recipient,
+                WITHDRAW_EVERYTHING,
+                true
             );
     }
 

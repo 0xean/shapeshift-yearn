@@ -2,10 +2,13 @@
 pragma solidity 0.6.12;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {VaultAPI, BaseWrapper} from "@yearnvaults/contracts/BaseWrapper.sol";
+import {VaultAPI} from "@yearnvaults/contracts/BaseWrapper.sol";
+import {BaseRouter} from "./BaseRouter.sol";
 
 contract ShapeShiftRouter is BaseRouter {
-    // use ownable from oz?
+    // TODO:
+    // BaseRouter not yet included in the 0.4.3 tagged release.
+    // use ownable from oz
     // additional information in smart contract?
     // events for rewards?
     // FOX?
@@ -48,14 +51,14 @@ contract ShapeShiftRouter is BaseRouter {
     }
 
     function migrate(address _token) external returns (uint256) {
-        return migrate(IERC20(_token), MIGRATE_EVERYTHING);
+        return _migrate(IERC20(_token), MIGRATE_EVERYTHING);
     }
 
     function _migrate(IERC20 _token, uint256 _amount)
         internal
         returns (uint256 migrated)
     {
-        VaultAPI currentBestVault = bestVault();
+        VaultAPI currentBestVault = bestVault(address(_token));
 
         // NOTE: Only override if we aren't migrating everything
         uint256 depositLimitOfVault = currentBestVault.depositLimit();

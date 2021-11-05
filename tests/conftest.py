@@ -33,6 +33,9 @@ def rewards(accounts):
 def rando(accounts):
     yield accounts[3]
 
+@pytest.fixture
+def rando2(accounts):
+    yield accounts[4]
 
 @pytest.fixture
 def token(pm, gov):
@@ -42,7 +45,6 @@ def token(pm, gov):
 
 @pytest.fixture
 def affiliate_token(token, affiliate, registry, AffiliateToken):
-    # Affliate Wrapper
     yield affiliate.deploy(
         AffiliateToken,
         token,
@@ -175,7 +177,6 @@ def live_affiliate_token(AffiliateToken, affiliate, live_token, live_registry):
 
 @pytest.fixture
 def live_shape_shift_router(ShapeShiftRouter, affiliate, live_registry):
-    # Affliate Wrapper
     yield affiliate.deploy(
         ShapeShiftRouter,
         live_registry

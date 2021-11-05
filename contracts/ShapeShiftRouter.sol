@@ -15,6 +15,8 @@ contract ShapeShiftRouter is BaseRouter {
     // If a user calls withdraw for tokens that are in a vault that this contract never interacted with
     // that vault with not have an approval from this contract.  Should we add the ability for the owner to
     // approve a fault as a safeguard, or maybe just better to direct caller to use yearn directly in that scenario.
+    // should we add a re-entrant guard for extra security
+    // gas optimizations in the withdraw functionality iterating over vaults[id]
 
     uint256 constant MIGRATE_EVERYTHING = type(uint256).max;
     // VaultsAPI.depositLimit is unlimited
